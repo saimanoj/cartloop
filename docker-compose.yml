@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+  web:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    #command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./app/:/usr/src/app/
+    ports:
+      - 8000:8000
+      - 5555:5555
+    env_file:
+      - ./app/app/.env
+    depends_on:
+      - db
+      - redis
+      
+  db:
+    image: postgres:12.1-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=cartloop
+      - POSTGRES_PASSWORD=cartloop123
+      - POSTGRES_DB=cartloop 
+  redis:
+    image: redis
+    container_name: app_cache
+    expose:
+      - 6379
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/var/lib/redis/data/
+
+volumes:
+  postgres_data:
+  redis_data:
